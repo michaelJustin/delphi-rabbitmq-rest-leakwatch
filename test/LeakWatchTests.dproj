@@ -51,11 +51,13 @@
 			<DCCReference Include="..\src\uSnapshotJson.pas"/>
 			<DCCReference Include="..\src\uSnapshotStore.pas"/>
 			<DCCReference Include="..\src\uLeakDetector.pas"/>
+			<DCCReference Include="..\src\uMemStats.pas"/>
 			<DCCReference Include="JsonDataObjectsSmokeTests.pas"/>
 			<DCCReference Include="SnapshotJsonTests.pas"/>
 			<DCCReference Include="SnapshotStoreTests.pas"/>
 			<DCCReference Include="SyntheticSeries.pas"/>
 			<DCCReference Include="LeakDetectorTests.pas"/>
+			<DCCReference Include="MemStatsTests.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

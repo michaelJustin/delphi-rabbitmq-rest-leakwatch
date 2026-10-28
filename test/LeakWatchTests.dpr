@@ -12,11 +12,13 @@ uses
   uSnapshotJson in '..\src\uSnapshotJson.pas',
   uSnapshotStore in '..\src\uSnapshotStore.pas',
   uLeakDetector in '..\src\uLeakDetector.pas',
+  uMemStats in '..\src\uMemStats.pas',
   JsonDataObjectsSmokeTests in 'JsonDataObjectsSmokeTests.pas',
   SnapshotJsonTests in 'SnapshotJsonTests.pas',
   SnapshotStoreTests in 'SnapshotStoreTests.pas',
   SyntheticSeries in 'SyntheticSeries.pas',
-  LeakDetectorTests in 'LeakDetectorTests.pas';
+  LeakDetectorTests in 'LeakDetectorTests.pas',
+  MemStatsTests in 'MemStatsTests.pas';
 
 begin
   if FindCmdLineSwitch('gui') then
