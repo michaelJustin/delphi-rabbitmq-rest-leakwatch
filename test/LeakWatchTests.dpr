@@ -15,13 +15,21 @@ uses
   uMemStats in '..\src\uMemStats.pas',
   uTransport in '..\src\uTransport.pas',
   uTransportRabbitMq in '..\src\uTransportRabbitMq.pas',
+  uConfig in '..\src\uConfig.pas',
+  uAppState in '..\src\uAppState.pas',
+  uEventLog in '..\src\uEventLog.pas',
+  uWorkerThread in '..\src\uWorkerThread.pas',
+  uSnapshotThread in '..\src\uSnapshotThread.pas',
+  uConsumerThread in '..\src\uConsumerThread.pas',
+  uLeakThread in '..\src\uLeakThread.pas',
   JsonDataObjectsSmokeTests in 'JsonDataObjectsSmokeTests.pas',
   SnapshotJsonTests in 'SnapshotJsonTests.pas',
   SnapshotStoreTests in 'SnapshotStoreTests.pas',
   SyntheticSeries in 'SyntheticSeries.pas',
   LeakDetectorTests in 'LeakDetectorTests.pas',
   MemStatsTests in 'MemStatsTests.pas',
-  TransportTests in 'TransportTests.pas';
+  TransportTests in 'TransportTests.pas',
+  AppTests in 'AppTests.pas';
 
 begin
   if FindCmdLineSwitch('gui') then

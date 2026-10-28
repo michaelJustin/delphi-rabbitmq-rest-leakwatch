@@ -54,6 +54,13 @@
 			<DCCReference Include="..\src\uMemStats.pas"/>
 			<DCCReference Include="..\src\uTransport.pas"/>
 			<DCCReference Include="..\src\uTransportRabbitMq.pas"/>
+			<DCCReference Include="..\src\uConfig.pas"/>
+			<DCCReference Include="..\src\uAppState.pas"/>
+			<DCCReference Include="..\src\uEventLog.pas"/>
+			<DCCReference Include="..\src\uWorkerThread.pas"/>
+			<DCCReference Include="..\src\uSnapshotThread.pas"/>
+			<DCCReference Include="..\src\uConsumerThread.pas"/>
+			<DCCReference Include="..\src\uLeakThread.pas"/>
 			<DCCReference Include="JsonDataObjectsSmokeTests.pas"/>
 			<DCCReference Include="SnapshotJsonTests.pas"/>
 			<DCCReference Include="SnapshotStoreTests.pas"/>
@@ -61,6 +68,7 @@
 			<DCCReference Include="LeakDetectorTests.pas"/>
 			<DCCReference Include="MemStatsTests.pas"/>
 			<DCCReference Include="TransportTests.pas"/>
+			<DCCReference Include="AppTests.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

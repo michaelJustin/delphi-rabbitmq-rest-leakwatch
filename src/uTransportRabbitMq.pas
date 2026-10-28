@@ -237,10 +237,12 @@ end;
 function HttpError(const Context: string; Status: Integer; const Body: string;
   IsDeclare: Boolean): ETransportHttpError;
 begin
-  if Status = 404 then
-    Result := ETransportNotFound.Create(Context, Status, Body)
-  else if (Status = 401) or (Status = 403) or (IsDeclare and (Status >= 400) and (Status < 500)) then
+  // a 4xx on a declare (including 404: unknown vhost) is a configuration
+  // error; retrying it would only loop
+  if (Status = 401) or (Status = 403) or (IsDeclare and (Status >= 400) and (Status < 500)) then
     Result := ETransportFatal.Create(Context, Status, Body)
+  else if Status = 404 then
+    Result := ETransportNotFound.Create(Context, Status, Body)
   else
     Result := ETransportHttpError.Create(Context, Status, Body);
 end;
