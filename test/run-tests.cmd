@@ -19,5 +19,6 @@ if not exist "%OUT%\dcu" mkdir "%OUT%\dcu"
   "-N0%OUT%\dcu" "-E%OUT%" "%~dp0LeakWatchTests.dpr"
 if errorlevel 1 exit /b 1
 
-"%OUT%\LeakWatchTests.exe"
+rem -integration also runs the tests against a local RabbitMQ (localhost:15672)
+"%OUT%\LeakWatchTests.exe" %*
 exit /b %ERRORLEVEL%
