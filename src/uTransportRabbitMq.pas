@@ -281,8 +281,9 @@ begin
       end;
     end;
     Result := BytesToUtf8String(Response);
-    // Indy does not raise for every non-2xx answer (e.g. a 401 after its
-    // own authentication retries), so check the status here as well
+    // Indy does not raise for every non-2xx answer: without hoInProcessAuth
+    // (off by default) a 401 that it could answer with credentials is
+    // returned as a normal response, so check the status here as well
     if (FHttp.ResponseCode < 200) or (FHttp.ResponseCode > 299) then
       raise HttpError(Context, FHttp.ResponseCode, Result, IsDeclare);
   finally
