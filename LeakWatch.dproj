@@ -47,6 +47,20 @@
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
 			<DCCReference Include="third_party\FastMM4\FastMM4.pas"/>
+			<DCCReference Include="src\uSnapshot.pas"/>
+			<DCCReference Include="src\uSnapshotJson.pas"/>
+			<DCCReference Include="src\uSnapshotStore.pas"/>
+			<DCCReference Include="src\uLeakDetector.pas"/>
+			<DCCReference Include="src\uMemStats.pas"/>
+			<DCCReference Include="src\uTransport.pas"/>
+			<DCCReference Include="src\uTransportRabbitMq.pas"/>
+			<DCCReference Include="src\uConfig.pas"/>
+			<DCCReference Include="src\uAppState.pas"/>
+			<DCCReference Include="src\uEventLog.pas"/>
+			<DCCReference Include="src\uWorkerThread.pas"/>
+			<DCCReference Include="src\uSnapshotThread.pas"/>
+			<DCCReference Include="src\uConsumerThread.pas"/>
+			<DCCReference Include="src\uLeakThread.pas"/>
 			<DCCReference Include="src\fMain.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
