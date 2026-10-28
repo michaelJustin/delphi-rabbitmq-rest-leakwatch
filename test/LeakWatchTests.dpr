@@ -8,7 +8,15 @@ uses
   TestFramework,
   TextTestRunner,
   GUITestRunner,
-  JsonDataObjectsSmokeTests in 'JsonDataObjectsSmokeTests.pas';
+  uSnapshot in '..\src\uSnapshot.pas',
+  uSnapshotJson in '..\src\uSnapshotJson.pas',
+  uSnapshotStore in '..\src\uSnapshotStore.pas',
+  uLeakDetector in '..\src\uLeakDetector.pas',
+  JsonDataObjectsSmokeTests in 'JsonDataObjectsSmokeTests.pas',
+  SnapshotJsonTests in 'SnapshotJsonTests.pas',
+  SnapshotStoreTests in 'SnapshotStoreTests.pas',
+  SyntheticSeries in 'SyntheticSeries.pas',
+  LeakDetectorTests in 'LeakDetectorTests.pas';
 
 begin
   if FindCmdLineSwitch('gui') then
