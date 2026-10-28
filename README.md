@@ -3,7 +3,8 @@
 **LeakWatch** is a Delphi 2009 VCL application that watches the memory of
 running Delphi processes for leaks. Every instance:
 
-- takes a snapshot of its FastMM4 memory manager statistics every 2 seconds,
+- takes a snapshot of its memory manager statistics every 2 seconds (the
+  memory manager built into the RTL, or optionally FastMM4),
 - publishes it to RabbitMQ through the management HTTP API (Indy `TIdHTTP`),
 - receives the snapshots of **all** running instances, on one or more machines,
 - runs a leak detector per instance and shows warnings with the AppId of the
@@ -40,7 +41,7 @@ API calls, see the companion project
  |  TLeakThread ----> objects on the heap (Mode A / B)     |
  |                                                         |
  |  TSnapshotThread                                        |    fanout exchange
- |    TMemStats.Capture (FastMM4) -> uSnapshotJson -------------> leakwatch.snapshots
+ |    TMemStats.Capture            -> uSnapshotJson -------------> leakwatch.snapshots
  |    ISnapshotTransport.Publish   (own TIdHTTP)  POST .../publish     |   |   |
  |                                                         |           v   v   v  one classic queue
  |  TConsumerThread                                        |    leakwatch.<InstanceId> per instance
@@ -58,12 +59,12 @@ API calls, see the companion project
 | Unit | Purpose |
 | --- | --- |
 | `uSnapshot` | Shared record types (`TMemSnapshot`, `TSample`, `TLeakLevel`), UTC and ISO 8601 helpers |
-| `uMemStats` | The only unit that uses FastMM4: `TMemStats.Capture` |
+| `uMemStats` | The only unit that knows the memory manager: `TMemStats.Capture` |
 | `uSnapshotJson` | Snapshot to and from JSON (schema version 1) with JsonDataObjects |
 | `uTransport` | `ISnapshotTransport` (`Declare`, `Publish`, `Poll`), broker settings, error classes |
 | `uTransportRabbitMq` | The management HTTP API implementation with `TIdHTTP` |
 | `uSnapshotStore` | Thread-safe store, one pre-allocated ring buffer per InstanceId |
-| `uLeakDetector` | Heuristics, combination and hysteresis; no VCL, Indy or FastMM4 |
+| `uLeakDetector` | Heuristics, combination and hysteresis; no VCL, Indy or memory manager |
 | `uSnapshotThread`, `uConsumerThread`, `uLeakThread` | The three worker threads (`uWorkerThread` is their base class) |
 | `uAppState` | State shared between threads and UI: bounded log, capped warnings list, status |
 | `uConfig` | INI file and command line |
@@ -122,9 +123,8 @@ be plugged in:
 - [Indy](https://github.com/IndySockets/Indy) 10.6.3, compiled from source.
   The Indy that ships with Delphi 2009 is **not** used.
 - [JsonDataObjects](https://github.com/ahausladen/JsonDataObjects) (MIT).
-- FastMM4 4.993 is included in `third_party/FastMM4` (see its
-  [README](third_party/FastMM4/README.md) for why it is vendored and which
-  options differ from upstream).
+- Optional: FastMM4 4.993, included in `third_party/FastMM4` (see
+  [Memory manager](#memory-manager)).
 - RabbitMQ with the management plugin, tested with RabbitMQ 4.4.0 on Windows.
 
 Clone Indy and JsonDataObjects **next to** this repository:
@@ -169,6 +169,42 @@ call "C:\Program Files (x86)\CodeGear\RAD Studio\6.0\bin\rsvars.bat"
 msbuild LeakWatch.groupproj /t:Build /p:Config=Debug
 ```
 
+### Memory manager
+
+By default LeakWatch uses the memory manager built into the RTL (since
+Delphi 2006 a trimmed-down FastMM4) and reads its statistics with
+`System.GetMemoryManagerState`. Its leak report at exit works without any
+configuration.
+
+To use **FastMM4 4.993** from `third_party/FastMM4` instead, define
+`LEAKWATCH_FASTMM4`:
+
+- IDE: *Project > Options > Directories/Conditionals > Conditional defines*,
+  for both projects;
+- command line: `set LEAKWATCH_FASTMM4=1` before `build.cmd` or
+  `test\run-tests.cmd`.
+
+`FastMM4` then becomes the first unit of the `.dpr` and `uMemStats` queries
+`FastMM4.GetMemoryManagerState`. Use it if you want FastMM4's FullDebugMode
+(call stacks for leaks) or its newer code. Three things to know, which are
+handled in this repository:
+
+- `System` declares its own `TMemoryManagerState` and
+  `GetMemoryManagerState` for the built-in manager (55 small block types,
+  FastMM4 4.993 has 56). With FastMM4 installed those report on the unused
+  built-in manager, so `uMemStats` qualifies every name with `FastMM4.`.
+- `FastMM4.pas` includes `FastMM4Options.inc` from its own folder first,
+  even when `-I` points elsewhere. That is why FastMM4 is vendored with a
+  project-specific options file instead of being a git submodule (see
+  [third_party/FastMM4/README.md](third_party/FastMM4/README.md)).
+- With its default options, FastMM4 reports leaks only under the IDE
+  debugger. The vendored options switch that off and let
+  `ReportMemoryLeaksOnShutdown` control the report.
+
+The log shows which memory manager is in use at start-up.
+
+### Warnings
+
 The project's own units compile without warnings. The Indy sources produce
 three warnings with Delphi 2009, which are expected:
 
@@ -211,8 +247,8 @@ work. Pick a generator mode on the left and click **Start**.
   balloon. The tray icon is green, orange or red for the highest level of all
   instances.
 - **Report leaks at exit**: when set, the objects the generator still holds
-  are left allocated on exit, and FastMM4 shows its leak report (a message
-  box) when the process ends. When cleared, everything is freed and no report
+  are left allocated on exit, and the memory manager shows its leak report
+  (a message box) when the process ends. When cleared, everything is freed and no report
   is shown.
 
 ### Identity: InstanceId and AppId
@@ -334,8 +370,8 @@ up, and a harmless sawtooth looks like a rising floor. A sub-window of half
 the window contains at least one trough of any cycle shorter than that.
 
 A size-class hint (which small block sizes grew most, plus medium and large
-block totals) is logged with each warning. FastMM4 has no per-class breakdown
-for medium and large blocks.
+block totals) is logged with each warning. The memory manager has no
+per-class breakdown for medium and large blocks.
 
 Example warning, from an acceptance run (Mode B with default settings, raised
 9 minutes after the start on all three instances):
@@ -404,9 +440,11 @@ test\run-tests.cmd -gui            DUnit GUI runner
 
 The unit tests cover the JSON format (escaping, Int64, German locale), the
 store (duplicates, out-of-order, wrap-around, restarts, staleness), the
-detector with the synthetic series above, `TMemStats.Capture` against
-FastMM4's own `GetMemoryManagerUsageSummary`, the request bodies and response
-parsing, the configuration and the leak generator.
+detector with the synthetic series above, `TMemStats.Capture` (that it
+queries the memory manager in use; with FastMM4 also against FastMM4's own
+`GetMemoryManagerUsageSummary`), the request bodies and response parsing,
+the configuration and the leak generator. Run them once with
+`LEAKWATCH_FASTMM4=1` as well when you change `uMemStats`.
 
 ## Known limitations
 
@@ -416,19 +454,21 @@ parsing, the configuration and the leak generator.
   [Habari STOMP Client](https://habarisoft.com) libraries), AMQP or the
   stream protocol behind `ISnapshotTransport`; see
   [above](#why-a-fanout-exchange-and-not-a-stream).
-- **FastMM4 statistics are a point-in-time view** of the whole heap,
+- **Memory manager statistics are a point-in-time view** of the whole heap,
   including LeakWatch's own allocations (Indy, JSON, the store). A short burst
   between two snapshots is invisible; a slow leak shows only over minutes.
-- **No per-allocation call stacks.** They need FastMM4's FullDebugMode, which
-  LeakWatch does not use. The size-class hint is the only attribution.
-- **The leak report at exit is a message box** (FastMM4 without FullDebugMode
-  writes no log file), and the process waits until it is closed.
+- **No per-allocation call stacks.** They need FastMM4's FullDebugMode
+  (optional FastMM4 build, not configured here). The size-class hint is the
+  only attribution.
+- **The leak report at exit is a message box** (neither the built-in manager
+  nor FastMM4 without FullDebugMode writes a log file), and the process waits
+  until it is closed.
 - Timestamps of different machines are never compared: the series of an
   instance uses its own timestamps, staleness the receiver's clock.
 - The INI file stores the broker password in plain text.
 
 ## Licence
 
-MIT, see [LICENSE](LICENSE). FastMM4 in `third_party/FastMM4` is dual
-licensed under MPL 1.1 and LGPL 2.1 (see its README). Indy and
+MIT, see [LICENSE](LICENSE). The optional FastMM4 in `third_party/FastMM4`
+is dual licensed under MPL 1.1 and LGPL 2.1 (see its README). Indy and
 JsonDataObjects are not part of this repository and have their own licences.

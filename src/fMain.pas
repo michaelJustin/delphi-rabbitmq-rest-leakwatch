@@ -113,7 +113,7 @@ var
 implementation
 
 uses
-  uTransport, uLeakDetector;
+  uTransport, uLeakDetector, uMemStats;
 
 const
   LevelColors: array[TLeakLevel] of TColor = ($0050B000, $0000A5FF, $002020E0);
@@ -570,6 +570,7 @@ var
 begin
   FLog.Add(Format('LeakWatch started: app ''%s'' (AppId from %s), instance %s',
     [FConfig.AppId, Sources[FConfig.AppIdSource], FConfig.InstanceId]));
+  FLog.Add('memory manager: ' + TMemStats.MemoryManagerName);
   FLog.Add('INI file: ' + FConfig.IniFileName);
   if Assigned(FEventLog) then
     FLog.Add('detector event log: ' + FConfig.EventLogFile);

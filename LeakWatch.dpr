@@ -1,7 +1,11 @@
 program LeakWatch;
 
 uses
-  FastMM4 in 'third_party\FastMM4\FastMM4.pas', // must stay the first unit
+{$IFDEF LEAKWATCH_FASTMM4}
+  // optional: FastMM4 instead of the built-in memory manager; must stay the
+  // first unit
+  FastMM4 in 'third_party\FastMM4\FastMM4.pas',
+{$ENDIF}
   Forms,
   uSnapshot in 'src\uSnapshot.pas',
   uSnapshotJson in 'src\uSnapshotJson.pas',

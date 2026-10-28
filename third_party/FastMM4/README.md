@@ -1,4 +1,8 @@
-# FastMM4 (vendored)
+# FastMM4 (vendored, optional)
+
+LeakWatch uses the memory manager built into the RTL by default. This copy
+of FastMM4 is used only when the conditional define `LEAKWATCH_FASTMM4` is
+set (see the main README, section "Memory manager").
 
 - Upstream: https://github.com/pleriche/FastMM4
 - Version: tag `release_4993` (FastMM 4.993, 2021-08-10)

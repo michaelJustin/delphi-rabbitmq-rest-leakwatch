@@ -3,7 +3,9 @@ program LeakWatchTests;
 {$APPTYPE CONSOLE}
 
 uses
+{$IFDEF LEAKWATCH_FASTMM4}
   FastMM4 in '..\third_party\FastMM4\FastMM4.pas', // must stay the first unit
+{$ENDIF}
   SysUtils,
   TestFramework,
   TextTestRunner,

@@ -1,7 +1,8 @@
 unit MemStatsTests;
 
-{ Requires FastMM4 to be the installed memory manager (first unit of the
-  test project). }
+{ Run against the memory manager the test project is built with: the
+  built-in one by default, FastMM4 with LEAKWATCH_FASTMM4. The Sees* tests
+  fail if TMemStats queries a manager that is not in use. }
 
 interface
 
@@ -11,7 +12,10 @@ uses
 type
   TMemStatsTest = class(TTestCase)
   published
+    procedure QueriesTheConfiguredMemoryManager;
+{$IFDEF LEAKWATCH_FASTMM4}
     procedure MatchesFastMM4UsageSummary;
+{$ENDIF}
     procedure BlockTotalsAddUp;
     procedure SeesLargeAllocation;
     procedure SeesSmallAllocations;
@@ -20,8 +24,23 @@ type
 implementation
 
 uses
-  FastMM4, uSnapshot, uMemStats;
+{$IFDEF LEAKWATCH_FASTMM4}
+  FastMM4,
+{$ENDIF}
+  SysUtils, uSnapshot, uMemStats;
 
+procedure TMemStatsTest.QueriesTheConfiguredMemoryManager;
+begin
+{$IFDEF LEAKWATCH_FASTMM4}
+  CheckTrue(IsMemoryManagerSet, 'FastMM4 installed');
+  CheckTrue(Pos('FastMM4', TMemStats.MemoryManagerName) = 1, TMemStats.MemoryManagerName);
+{$ELSE}
+  CheckFalse(IsMemoryManagerSet, 'built-in memory manager in use');
+  CheckEquals('built-in (RTL)', TMemStats.MemoryManagerName);
+{$ENDIF}
+end;
+
+{$IFDEF LEAKWATCH_FASTMM4}
 procedure TMemStatsTest.MatchesFastMM4UsageSummary;
 var
   V: TMemStatsValues;
@@ -34,6 +53,7 @@ begin
   CheckEquals(Int64(U.OverheadBytes), V.OverheadBytes, 'OverheadBytes');
   CheckEquals(U.EfficiencyPercentage, V.Efficiency, 1E-9, 'Efficiency');
 end;
+{$ENDIF}
 
 procedure TMemStatsTest.BlockTotalsAddUp;
 var
@@ -50,7 +70,7 @@ begin
     Inc(Small, V.Small[I].Count);
     Inc(SmallBytes, V.Small[I].Count * V.Small[I].BlockSize);
   end;
-  CheckTrue(V.SmallCount <= FastMM4.NumSmallBlockTypes, 'SmallCount');
+  CheckTrue(V.SmallCount <= MaxSmallClasses, 'SmallCount');
   CheckEquals(V.TotalAllocatedBlocks, Small + V.MediumBlockCount + V.LargeBlockCount, 'blocks');
   CheckEquals(V.AllocatedBytes, SmallBytes + V.MediumBlockBytes + V.LargeBlockBytes, 'bytes');
 end;
