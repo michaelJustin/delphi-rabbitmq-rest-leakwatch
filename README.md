@@ -1,5 +1,12 @@
 # delphi-rabbitmq-rest-leakwatch
 
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Delphi 2009](https://img.shields.io/badge/Delphi-2009-EE1F35)](#requirements-and-folder-layout)
+[![Platform: Win32](https://img.shields.io/badge/platform-Win32-0078D6)](#requirements-and-folder-layout)
+[![RabbitMQ 4.4 tested](https://img.shields.io/badge/RabbitMQ-4.4%20tested-FF6600?logo=rabbitmq&logoColor=white)](#rabbitmq-setup)
+[![Indy 10.6.3](https://img.shields.io/badge/Indy-10.6.3-blue)](https://github.com/IndySockets/Indy)
+[![FastMM4: optional](https://img.shields.io/badge/FastMM4-optional-lightgrey)](#memory-manager)
+
 **LeakWatch** is a Delphi 2009 VCL application that watches the memory of
 running Delphi processes for leaks. Every instance:
 
