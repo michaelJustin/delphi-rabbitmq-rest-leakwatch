@@ -1,0 +1,60 @@
+; LeakWatch configuration. Copy to LeakWatch.ini next to LeakWatch.exe
+; (or pass -ini=<path>). All keys are optional; the values shown are the
+; defaults. Decimal numbers always use "." as separator.
+;
+; Note: the password is stored in plain text. LeakWatch.ini is gitignored.
+
+[Broker]
+Host=localhost
+Port=15672
+User=guest
+Password=guest
+VHost=/
+TimeoutMs=5000
+
+[App]
+; Display label; default: <hostname>-<pid>. Instances started from the same
+; folder share this file, so prefer -id=<AppId> on the command line.
+;AppId=WS-01
+IntervalMs=2000
+PollMs=1000
+StoreCapacity=600
+
+[Detector]
+WindowSamples=300
+StartupIgnoreSeconds=120
+MinDataSeconds=420
+SlopeThresholdKBPerMin=256
+SlopeThresholdBlocksPerMin=2000
+MinR2=0.8
+MonotonicShare=0.9
+Segments=8
+NoReleaseMinutes=5
+DropPercent=5
+WeightTrend=0.8
+WeightMonotonic=0.3
+WeightLowWater=0.9
+WeightNoRelease=0.6
+SuspectedThreshold=0.4
+LikelyThreshold=0.7
+FallMargin=0.1
+RaiseCount=3
+FallCount=10
+
+[Generator]
+; A = random churn, B = continuous growth
+Mode=A
+ChurnMinIntervalMs=50
+ChurnMaxIntervalMs=200
+ChurnMaxObjects=10
+ChurnMinSize=64
+ChurnMaxSize=16384
+ChurnMinLifetimeMs=1000
+ChurnMaxLifetimeMs=30000
+GrowthRate=20
+GrowthMinSize=1024
+GrowthMaxSize=8192
+ReleaseEnabled=0
+ReleaseAfterSeconds=180
+ReleaseAfterObjects=0
+PermanentPercent=10

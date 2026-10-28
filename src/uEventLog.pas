@@ -51,7 +51,11 @@ begin
   FLock := TCriticalSection.Create;
   FObserverAppId := ObserverAppId;
   FObserverInstanceId := ObserverInstanceId;
-  FStream := TFileStream.Create(FileName, fmCreate);
+  // create (or empty) the file, then reopen it so that other programs can
+  // read it while LeakWatch runs (Delphi 2009's TFileStream does not accept
+  // fmCreate combined with a share mode)
+  TFileStream.Create(FileName, fmCreate).Free;
+  FStream := TFileStream.Create(FileName, fmOpenWrite or fmShareDenyWrite);
 end;
 
 destructor TDetectorEventLog.Destroy;
