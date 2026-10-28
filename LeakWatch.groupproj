@@ -1,0 +1,48 @@
+	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{D81F4A2C-7B35-4E9A-A6C0-3F52B8E17D94}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="LeakWatch.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="test\LeakWatchTests.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="LeakWatch">
+			<MSBuild Projects="LeakWatch.dproj"/>
+		</Target>
+		<Target Name="LeakWatch:Clean">
+			<MSBuild Targets="Clean" Projects="LeakWatch.dproj"/>
+		</Target>
+		<Target Name="LeakWatch:Make">
+			<MSBuild Targets="Make" Projects="LeakWatch.dproj"/>
+		</Target>
+		<Target Name="LeakWatchTests">
+			<MSBuild Projects="test\LeakWatchTests.dproj"/>
+		</Target>
+		<Target Name="LeakWatchTests:Clean">
+			<MSBuild Targets="Clean" Projects="test\LeakWatchTests.dproj"/>
+		</Target>
+		<Target Name="LeakWatchTests:Make">
+			<MSBuild Targets="Make" Projects="test\LeakWatchTests.dproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="LeakWatch;LeakWatchTests"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="LeakWatch:Clean;LeakWatchTests:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="LeakWatch:Make;LeakWatchTests:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>

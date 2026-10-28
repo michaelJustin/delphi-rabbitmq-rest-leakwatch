@@ -1,0 +1,27 @@
+# Build output (build.cmd, test\run-tests.cmd, IDE)
+build/
+*.dcu
+*.exe
+*.dll
+*.bpl
+*.dcp
+*.map
+*.drc
+*.rsm
+*.tds
+*.res
+*.obj
+
+# IDE state
+__history/
+__recovery/
+*.~*
+*.local
+*.identcache
+*.stat
+*.dsk
+*.cfg
+
+# Runtime files (the INI holds the broker password)
+LeakWatch.ini
+*-events.log
