@@ -19,6 +19,11 @@ running Delphi processes for leaks. Every instance:
 - and contains a leak generator, so you can see the detector at work: Mode A
   churns memory without leaking, Mode B leaks.
 
+![LeakWatch instance WS-01 flagging WS-02 as a likely leak](docs/screenshot.png)
+
+*Instance WS-01 during the [acceptance test](#multiple-instances-and-the-acceptance-test):
+WS-02 (Mode B) is flagged as a likely leak, WS-01 and WS-03 (Mode A) are not.*
+
 It is a demo and a test bed for leak heuristics, not a production monitoring
 system (see [Known limitations](#known-limitations)). For the bare management
 API calls, see the companion project
