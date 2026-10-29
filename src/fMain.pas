@@ -413,7 +413,7 @@ begin
   chkReportLeaks := TCheckBox.Create(Self);
   chkReportLeaks.Parent := pnlLeft;
   chkReportLeaks.SetBounds(8, 510, 264, 17);
-  chkReportLeaks.Caption := 'Report leaks at exit (FastMM4)';
+  chkReportLeaks.Caption := 'Report leaks at exit';
   lblHeld := TLabel.Create(Self);
   lblHeld.Parent := pnlLeft;
   lblHeld.AutoSize := False;
